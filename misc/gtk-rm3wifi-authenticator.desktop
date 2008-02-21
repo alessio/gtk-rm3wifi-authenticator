@@ -1,0 +1,10 @@
+[Desktop Entry]
+Categories=Application;Network;
+Encoding=UTF-8
+Exec=gtk-rm3wifi-authenticator
+GenericName=Network Manager
+Icon=/usr/share/pixmaps/gtk-rm2wifi-authenticator.png
+Name=GTK Rm3WiFi Authenticator
+Terminal=false
+Type=Application
+Version=0.3
