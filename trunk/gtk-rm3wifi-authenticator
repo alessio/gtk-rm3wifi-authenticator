@@ -1,0 +1,7 @@
+#!/bin/bash
+echo "Starting the daemon..."
+/usr/bin/env python rm3wifi-factotumd.py start
+echo "Run."
+/usr/bin/env python gtk-rm3wifi-authenticator.py
+echo "Stopping the daemon..."
+/usr/bin/env python rm3wifi-factotumd.py stop
