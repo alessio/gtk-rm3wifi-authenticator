@@ -3,7 +3,7 @@
 
 # This file is part of gtk-rm3wifi-authenticator
 #
-# gtk-rm3wifi-authenticator v0.3.8 - A small authenticator for wireless network of
+# gtk-rm3wifi-authenticator v0.4.0 - A small authenticator for wireless network of
 # University of RomaTre.
 # Copyright (C) 2008  Alessio Treglia <quadrispro@ubuntu-it.org>
 #
@@ -47,7 +47,6 @@ class FactotumDaemon(dbus.service.Object):
 	def __init__(self, bus_name, object_path='/org/factotum/daemon'):
 		dbus.service.Object.__init__(self, bus_name, object_path)
 		self.wifi_auth = WiFiAuthenticator()
-		
 	@dbus.service.method('org.factotum.daemon')
 	def login(self):
 		# Do auth
@@ -58,6 +57,21 @@ class FactotumDaemon(dbus.service.Object):
 	@dbus.service.method('org.factotum.daemon')
 	def set_password(self, password):
 		self.wifi_auth.set_password(password)
+	@dbus.service.method('org.factotum.daemon')
+	def start_autorelogin(self):
+		self.wifi_auth.start_autorelogin()
+	@dbus.service.method('org.factotum.daemon')
+	def stop_autorelogin(self):
+		self.wifi_auth.stop_autorelogin()
+	@dbus.service.method('org.factotum.daemon')
+	def set_relogin_timeout(self, relogin_timeout):
+		self.wifi_auth.set_relogin_timeout(relogin_timeout)
+	@dbus.service.method('org.factotum.daemon')
+	def set_relogin(self, relogin):
+		self.wifi_auth.set_relogin(relogin)
+	@dbus.service.method('org.factotum.daemon')
+	def hello(self):
+		syslog.syslog(syslog.LOG_INFO, 'Hello world!')
 
 ############## SIGNAL HANDLERS ##############
 def terminate(signal, param):

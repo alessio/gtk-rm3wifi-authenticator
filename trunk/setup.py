@@ -24,21 +24,23 @@
 
 from distutils.core import setup
 
-from rm3iwificommon import VERSION, SHORT_APPNAME
+from rm3wificommon import VERSION, SHORT_APPNAME
 
 setup(name = SHORT_APPNAME,
       version = VERSION,
       description = 'Small authenticator for wireless network of University of RomaTre',
       author = 'Alessio Treglia',
       author_email = 'quadrispro@ubuntu-it.org',
-      url = 'http://www.quadrispro.netsons.org/gtk-rm3wifi-factotum',
+      url = 'https://code.google.com/p/gtk-rm3wifi-authenticator',
       license = 'GNU GPL 3',
-      requires = ["gtk", "pycurl"],
+      requires = ["pygtk", "gtk", "pycurl"],
       platform = ["Platform independent"],
-      scripts = ['gtk-rmwifi-authenticator'],
-      packages = [''],
-      package_data = {'' : ['glade/*', 'po/*/LC_MESSAGES/*.mo']},
-      data_files = [('share/pixmaps', ['gtk-rm3wifi-authenticator.png']),
-                    ('share/icons/hicolor/scalable/apps', ['gtk-rm3wifi-authenticator.svg']),
-                    ('share/applications',['gtk-rm3wifi-authenticator.desktop'])])
+#      scripts = ['gtk-rm3wifi-authenticator'],
+      packages = ['.'],
+#      package_data = {'' : ['glade/*', 'po/*/LC_MESSAGES/*.mo', 'images/*', 'misc/*']},
+      data_files = [('share/pixmaps', ['images/gtk-rm3wifi-authenticator.png']),
+                    ('share/icons/hicolor/scalable/apps', ['images/gtk-rm3wifi-authenticator.svg']),
+                    ('share/applications',['misc/gtk-rm3wifi-authenticator.desktop']),
+                    ('bin',['gtk-rm3wifi-authenticator']),
+                    ('share/gtk-rm3wifi-authenticator/glade',['glade/gtk-rm3wifi-authenticator.glade'])])
 
