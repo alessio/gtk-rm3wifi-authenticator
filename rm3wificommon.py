@@ -3,7 +3,7 @@
 
 # This file is part of gtk-rm3wifi-authenticator
 #
-# gtk-rm3wifi-authenticator v0.3.8 - A small authenticator for wireless network of
+# gtk-rm3wifi-authenticator v0.4.0 - A small authenticator for wireless network of
 # University of RomaTre.
 # Copyright (C) 2008  Alessio Treglia <quadrispro@ubuntu-it.org>
 #
@@ -23,7 +23,7 @@
 #
 
 SHORT_APPNAME = "gtk-rm3wifi-authenticator"
-VERSION = '0.3.8'
+VERSION = '0.4.0'
 LICENSE = """
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -39,6 +39,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
+
+CONFIG_FILENAME = '.rm3wifi'
 
 ABOUT_LOGO_SVG = "images/gtk-rm3wifi-authenticator.svg"
 ABOUT_LOGO_PNG = "images/gtk-rm3wifi-authenticator.png"

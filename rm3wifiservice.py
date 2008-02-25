@@ -3,7 +3,7 @@
 
 # This file is part of gtk-rm3wifi-authenticator
 #
-# gtk-rm3wifi-authenticator v0.3.8 - A small authenticator for wireless network of
+# gtk-rm3wifi-authenticator v0.4.0 - A small authenticator for wireless network of
 # University of RomaTre.
 # Copyright (C) 2008  Alessio Treglia <quadrispro@ubuntu-it.org>
 #
@@ -78,6 +78,8 @@ class WiFiAuthenticator:
 		self.session_id = ''
 		self.method = 'standard_sign-on'
 		self.autorelogin_thread = None
+		self.relogin_timeout = 0.0
+		self.relogin = True
 		## CURL INITIALIZATION
 		self.curl_object = pycurl.Curl()
 		self.curl_object.setopt(pycurl.URL, self.server_url)
@@ -158,10 +160,16 @@ class WiFiAuthenticator:
 		if data.find('User authorized') == -1:
 			raise Exception, "Access denied! Wrong user name or password!"
 		return 0
-	def start_autorelogin(self, interval):
-		self.autorelogin_thread = threading.Timer(interval, self.authorize)
-		# TODO LOOP
-		t.start()
+	def start_autorelogin(self):
+		"""
+		Starts automatic relogin procedure.
+		"""
+		while self.relogin is True:
+			# init new thread
+			self.autorelogin_thread = threading.Timer(self.relogin_timeout, self.authorize)
+			self.autorelogin_thread.start() # start new thread
+			self.autorelogin_thread.join() # and wait until it's finished
+		self.stop_autorelogin()
 	def stop_autorelogin(self):
 		self.autorelogin_thread.cancel()
 	def set_username(self, username):
@@ -179,3 +187,13 @@ class WiFiAuthenticator:
 		Set authentication method.
 		"""
 		self.method = method
+	def set_relogin_timeout(self, relogin_timeout):
+		"""
+		Set relogin timeout.
+		"""
+		self.relogin_timeout = relogin_timeout
+	def set_relogin(self, relogin):
+		"""
+		Enable/Disable automatic relogin.
+		"""
+		self.relogin = relogin
