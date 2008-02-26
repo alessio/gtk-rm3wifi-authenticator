@@ -42,8 +42,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 CONFIG_FILENAME = '.rm3wifi'
 
-ABOUT_LOGO_SVG = "images/gtk-rm3wifi-authenticator.svg"
-ABOUT_LOGO_PNG = "images/gtk-rm3wifi-authenticator.png"
+LOGO_SVG = "images/gtk-rm3wifi-authenticator.svg"
+LOGO_PNG = "images/gtk-rm3wifi-authenticator.png"
 
 VERBOSE_MODE = True
 
