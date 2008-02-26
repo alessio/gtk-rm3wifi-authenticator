@@ -27,6 +27,13 @@ from sgmllib import SGMLParser
 import urllib, pycurl
 import threading
 
+def _(message): return message
+
+class ServerNotFoundException(Exception):
+	message = _("Server not found or offline.")
+class AccessDeniedException(Exception):
+	message = _("Access denied! Wrong user name or password!")
+
 class MyParser(SGMLParser):
 	"""
 	A simple parser for HTML documents.
@@ -65,7 +72,7 @@ class WiFiAuthenticator:
 	# Method
 	authentication_methods = {'standard_sign-on' : '1', 'special_sign-on' : '2', 'sign-off' : '3'}
 	# Success string
-	success_string = "User authorized"
+	success_string = "User authorized" # DON'T TRANSLATE THIS!
 	# Downloaded page
 	page_file = '/tmp/pagefile.html'
 	
@@ -138,7 +145,8 @@ class WiFiAuthenticator:
 		try:
 			self.curl_object.perform()
 		except:
-			raise Exception, "Server not found or offline."
+			#raise Exception, "Server not found or offline."
+			raise ServerNotFoundException, ServerNotFoundException.message
 		data = self.__read_page()
 		p = MyParser()
 		p.feed(data)
@@ -158,7 +166,7 @@ class WiFiAuthenticator:
 		data = self.__read_page()
 		
 		if data.find('User authorized') == -1:
-			raise Exception, "Access denied! Wrong user name or password!"
+			raise AccessDeniedException, AccessDeniedException.message
 		return 0
 	def start_autorelogin(self):
 		"""
