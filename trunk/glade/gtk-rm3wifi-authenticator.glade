@@ -8,7 +8,6 @@
     <property name="title" translatable="yes">GTK Rm3WiFi Authenticator</property>
     <property name="resizable">False</property>
     <property name="window_position">GTK_WIN_POS_MOUSE</property>
-    <property name="icon">gtk-rm3wifi-authenticator.png</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
     <child>
       <widget class="GtkVBox" id="vbox1">
