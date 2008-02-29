@@ -1,5 +1,8 @@
 Version 0.4.1:
- * fixed about dialog
+ * fixed about dialog (logo and icon)
+ * added Preferences window icon
+ * sintax error fixed
+ * created translations template
 
 Version 0.4.0:
  * now GUI controller is a small tray icon;

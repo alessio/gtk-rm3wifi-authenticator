@@ -3,7 +3,7 @@
 
 # This file is part of gtk-rm3wifi-authenticator
 #
-# gtk-rm3wifi-authenticator v0.4.0 - A small authenticator for wireless network of
+# gtk-rm3wifi-authenticator v0.4.1 - A small authenticator for wireless network of
 # University of RomaTre.
 # Copyright (C) 2008  Alessio Treglia <quadrispro@ubuntu-it.org>
 #
@@ -27,7 +27,18 @@ from sgmllib import SGMLParser
 import urllib, pycurl
 import threading
 
-def _(message): return message
+import locale, gettext
+
+############# TRANSLATIONS SECTION
+
+LOCALE_PATH = os.path.realpath(os.path.dirname(sys.argv[0])) + '/po'
+locale.setlocale(locale.LC_ALL, '')
+
+# register the gettext function for the whole interpreter as "_"
+import __builtin__
+__builtin__._ = gettext.gettext
+
+############# END TRANSLATIONS SECTION
 
 class ServerNotFoundException(Exception):
 	message = _("Server not found or offline.")
@@ -72,7 +83,7 @@ class WiFiAuthenticator:
 	# Method
 	authentication_methods = {'standard_sign-on' : '1', 'special_sign-on' : '2', 'sign-off' : '3'}
 	# Success string
-	success_string = "User authorized" # DON'T TRANSLATE THIS!
+	success_string = 'User authorized' # DON'T TRANSLATE THIS!
 	# Downloaded page
 	page_file = '/tmp/pagefile.html'
 	
@@ -205,3 +216,4 @@ class WiFiAuthenticator:
 		Enable/Disable automatic relogin.
 		"""
 		self.relogin = relogin
+
