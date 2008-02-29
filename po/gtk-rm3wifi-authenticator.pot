@@ -1,0 +1,136 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: gtk-rm3wifi-authenticator 0.4.1\n"
+"Report-Msgid-Bugs-To: Alessio Treglia <quadrispro@ubuntu-it.org>\n"
+"POT-Creation-Date: 2008-02-29 12:42+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: gtk-rm3wifi-authenticator.py:57
+msgid "attempting to connect daemon..."
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:59
+msgid "OK"
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:61
+msgid "Daemon is not running!"
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:74
+msgid "Initializing configuration..."
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:77
+msgid "Configuration initialized"
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:85
+msgid "Configuration set to default values"
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:89
+msgid "Saving configuration..."
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:98
+msgid "Configuration saved"
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:100
+msgid "Try to loading configuration from file..."
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:103
+msgid "Config file doesn't exist!"
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:104
+msgid "Configuration file not found"
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:111
+msgid "Configuration loaded"
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:127
+#, python-format
+msgid "A message dialog is appeared: %s"
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:149
+msgid "_Login..."
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:149
+msgid "Login to network"
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:150
+msgid "_About..."
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:150 glade/gtk-rm3wifi-authenticator.glade:8
+msgid "About gtk-rm3wifi-authenticator"
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:151
+msgid "_Quit"
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:151
+msgid "Quit gtk-rm3wifi-authenticator"
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:165
+msgid "Initializing gtk-rm3wifi-authenticator..."
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:202
+msgid "Operation successfully terminated"
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:231
+msgid "About dialog is appeared"
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:237
+msgid "Quitting..."
+msgstr ""
+
+#: rm3wifiservice.py:44
+msgid "Server not found or offline."
+msgstr ""
+
+#: rm3wifiservice.py:46
+msgid "Access denied! Wrong user name or password!"
+msgstr ""
+
+#: glade/gtk-rm3wifi-authenticator.glade:16
+msgid "Project website"
+msgstr ""
+
+#: glade/gtk-rm3wifi-authenticator.glade:45
+msgid "Preferences"
+msgstr ""
+
+#: glade/gtk-rm3wifi-authenticator.glade:68
+msgid "Username"
+msgstr ""
+
+#: glade/gtk-rm3wifi-authenticator.glade:75
+msgid "Password"
+msgstr ""
+
+#: glade/gtk-rm3wifi-authenticator.glade:87
+msgid "Relogin after (seconds)"
+msgstr ""
+
+#: gtk-rm3wifi-authenticator.py:180
+msgid "translator-credits"
+msgstr ""
