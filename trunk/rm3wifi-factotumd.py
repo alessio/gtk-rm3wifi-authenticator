@@ -3,7 +3,7 @@
 
 # This file is part of gtk-rm3wifi-authenticator
 #
-# gtk-rm3wifi-authenticator v0.4.0 - A small authenticator for wireless network of
+# gtk-rm3wifi-authenticator v0.4.1 - A small authenticator for wireless network of
 # University of RomaTre.
 # Copyright (C) 2008  Alessio Treglia <quadrispro@ubuntu-it.org>
 #
@@ -36,7 +36,20 @@ import time, syslog
 
 from rm3wifiservice import WiFiAuthenticator
 
-from rm3wificommon import PID_PATH
+from rm3wificommon import PID_PATH, LANG_PATH
+
+import locale, gettext
+
+############# TRANSLATIONS SECTION
+
+LOCALE_PATH = os.path.realpath(os.path.dirname(sys.argv[0])) + '/po'
+locale.setlocale(locale.LC_ALL, '')
+
+# register the gettext function for the whole interpreter as "_"
+import __builtin__
+__builtin__._ = gettext.gettext
+
+############# END TRANSLATIONS SECTION
 
 class FactotumException(dbus.DBusException):
 	_dbus_error_name = 'org.factotum.daemon.FactotumException'
@@ -130,8 +143,9 @@ def start():
 	try:
 		pid = os.fork()
 		if pid > 0:
-			print >>sys.stdout, "%s: pid %d" % (call_name, pid)
-			syslog.syslog(syslog.LOG_INFO, 'pid %d' % pid) # log
+			print >>sys.stdout, "Starting %s... (pid %d)" % (call_name, pid),
+			syslog.syslog(syslog.LOG_INFO, 'Starting with pid %d...' % pid) # log
+			print >>sys.stdout, "\t\t\tOK"
 			sys.exit(0)
 	except OSError, e:
 		print >>sys.stderr, "fork #2 failed: %d (%s)" % (e.errno, e.strerror)
@@ -184,7 +198,7 @@ if len(sys.argv) == 2:
 		# Stop the daemon
 		s = stop()
 		if s == 1:
-			sys.stdout.write("%s: daemon is not running\n" % call_name)
+			sys.stdout.write("%s is not running.\n" % call_name)
 			sys.exit(1)
 		sys.stdout.write("%s: stopped.\n" % call_name)
 		sys.exit(0)
@@ -192,15 +206,15 @@ if len(sys.argv) == 2:
 		# Print daemon status
 		s = status()
 		if s == -1:
-			sys.stdout.write("%s: daemon is not running\n" % call_name)
+			sys.stdout.write("%s is not running\n" % call_name)
 		else:
-			sys.stdout.write("%s: daemon [%d] is running\n" % (call_name, s))
+			sys.stdout.write("%s is running with pid %d\n" % (call_name, s))
 		sys.exit(0)
 	elif sys.argv[1] == 'start':
 		# Start the daemon
 		s = status()
 		if s != -1:
-			sys.stdout.write("%s: daemon [%d] is running\n" % (call_name, s))
+			sys.stdout.write("%s is running with pid %d.\n" % (call_name, s))
 			sys.exit(1)
 		start()
 	else:
@@ -221,3 +235,4 @@ except Exception, e:
 #enter the main loop
 mainloop = gobject.MainLoop()
 mainloop.run()
+

@@ -3,7 +3,7 @@
 
 # This file is part of gtk-rm3wifi-authenticator
 #
-# gtk-rm3wifi-authenticator v0.3.8 - A small authenticator for wireless network of
+# gtk-rm3wifi-authenticator v0.4.1 - A small authenticator for wireless network of
 # University of RomaTre.
 # Copyright (C) 2008  Alessio Treglia <quadrispro@ubuntu-it.org>
 #
@@ -37,7 +37,7 @@ setup(name = SHORT_APPNAME,
       platform = ["Platform independent"],
 #      scripts = ['gtk-rm3wifi-authenticator'],
       packages = ['.'],
-#      package_data = {'' : ['glade/*', 'po/*/LC_MESSAGES/*.mo', 'images/*', 'misc/*']},
+      package_data = {'' : ['glade/*', 'po/*/LC_MESSAGES/*.mo', 'images/*', 'misc/*']},
       data_files = [('share/pixmaps', ['images/gtk-rm3wifi-authenticator.png']),
                     ('share/icons/hicolor/scalable/apps', ['images/gtk-rm3wifi-authenticator.svg']),
                     ('share/applications',['misc/gtk-rm3wifi-authenticator.desktop']),
