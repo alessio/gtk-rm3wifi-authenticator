@@ -95,6 +95,7 @@ class Configuration:
 			self.cp.set(self.CONFIG_SECTION_NAME, k, str(v))
 		# write to file
 		self.cp.write(config_file)
+		config_file.close()	 # bugfix
 		Verboser.print_verbose_msg(_('Configuration saved'))
 	def load_from_file(self):
 		Verboser.print_verbose_msg(_('Try to loading configuration from file...'))
