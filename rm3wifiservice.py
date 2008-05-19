@@ -3,7 +3,7 @@
 
 # This file is part of gtk-rm3wifi-authenticator
 #
-# gtk-rm3wifi-authenticator v0.4.1 - A small authenticator for wireless network of
+# gtk-rm3wifi-authenticator v0.5.0 - A small authenticator for wireless network of
 # University of RomaTre.
 # Copyright (C) 2008  Alessio Treglia <quadrispro@ubuntu-it.org>
 #
@@ -24,7 +24,7 @@
 
 import os, sys
 from sgmllib import SGMLParser
-import urllib, pycurl
+import urllib, urllib2, pycurl
 import threading
 
 import locale, gettext
@@ -44,7 +44,15 @@ class ServerNotFoundException(Exception):
 	message = _("Server not found or offline.")
 class AccessDeniedException(Exception):
 	message = _("Access denied! Wrong user name or password!")
-
+class LogoutException(Exception):
+	message = _("Logout failed.")
+class InvalidNameOrPasswordException(Exception):
+	message = _("Invalid name or password")
+class AlreadyLoggedInException(Exception):
+	message = _("You are already logged in")
+class LoginException(Exception):
+	message = _("Unknown exception during login")
+	
 class MyParser(SGMLParser):
 	"""
 	A simple parser for HTML documents.
@@ -55,25 +63,39 @@ class MyParser(SGMLParser):
 		__init__() calls this
 		"""
 		SGMLParser.reset(self)
-		self.session_id = ''
-	def start_input(self, attrs):
+		self.logout_params = []
+	def __url_to_params_list(self, url):
+		params_list = []
+		for p in url.partition('/login.pl?')[2].split(';'):
+			k, v = p.split('=')
+			params_list.append( (k, v) )
+		return params_list
+	def start_a(self, attrs):
 		"""
-		Parse <input> tag.
+		Parse <a> tag.
 		"""
-		# print attrs
 		for k in attrs:
-			if k[0] == 'name' and k[1] == 'ID' and self.session_id == '':
-				self.session_id = attrs[attrs.index(k)+1][1]
-		# print self.session_id
-	def get_session_id(self):
+			if k[0] == 'href' and 'action=logout' in k[1]:
+				self.logout_url = k[1]
+				self.logout_params = self.__url_to_params_list(k[1])
+				break
+	def get_logout_url(self):
 		"""
-		Return session ID.
+		Return URL for logout.
 		"""
-		return self.session_id
+		return self.logout_url
+	def get_logout_params(self):
+		"""
+		Return logout params by URL.
+		"""
+		return self.logout_params
 
 class WiFiAuthenticator:
 	# Server URL for authentication
-	server_url = 'https://193.204.167.81:1234/'
+	# server_url = 'https://193.204.167.81:1234/'
+	server_url = 'https://authentication.uniroma3.it'
+	# Server URL (for logout)
+	# server_logout_url = 'http://logout.wifi-uniroma3.it/'
 	# User agent
 	user_agent = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.3) Gecko/20070309 Firefox/2.0.0.3"
 	# Timeout
@@ -82,8 +104,10 @@ class WiFiAuthenticator:
 	states = {'send_username' : '1', 'send_password' : '2', 'get_authorization' : '3'}
 	# Method
 	authentication_methods = {'standard_sign-on' : '1', 'special_sign-on' : '2', 'sign-off' : '3'}
-	# Success string
-	success_string = 'User authorized' # DON'T TRANSLATE THIS!
+	# Success string (for login)
+	login_success_string = 'per continuare con la navigazione'
+	# Success string (for logout)
+	logout_success_string = 'You have successfully logged out'
 	# Downloaded page
 	page_file = '/tmp/pagefile.html'
 	
@@ -93,10 +117,10 @@ class WiFiAuthenticator:
 		"""
 		self.username = ''
 		self.password = ''
-		self.session_id = ''
-		self.method = 'standard_sign-on'
+		self.logout_url = ''
+		self.logout_params = []
 		self.autorelogin_thread = None
-		self.relogin_timeout = 0.0
+		self.relogin_timeout = 600.0
 		self.relogin = True
 		## CURL INITIALIZATION
 		self.curl_object = pycurl.Curl()
@@ -104,13 +128,8 @@ class WiFiAuthenticator:
 		self.curl_object.setopt(pycurl.USERAGENT, self.user_agent)
 		self.curl_object.setopt(pycurl.SSL_VERIFYHOST, 0)
 		self.curl_object.setopt(pycurl.SSL_VERIFYPEER, 0)
+		# self.curl_object.setopt(pycurl.POST, 1)
 		self.curl_object.setopt(pycurl.WRITEFUNCTION, self.__write_page)
-	def __encode_data(self, **data):
-		"""
-		Useful to convert dictionary to POST request string.
-		"""
-		return urllib.urlencode(data)
-		
 	def __write_page(self, body):
 		"""
 		Writes download page into a file.
@@ -126,58 +145,56 @@ class WiFiAuthenticator:
 		content = f.read()
 		f.close()
 		return content
-	def __send_username(self):
-		"""
-		First step of authentication procedure.
-		"""
-		params = urllib.urlencode([('ID', self.session_id),('STATE', self.states['send_username']),('DATA',self.username)])
+	def login(self):
+		# _FORM_SUBMIT=1;which_form=reg;destination=;source=;error=;
+		self.curl_object.setopt(pycurl.URL, self.server_url + '/login.pl')
+		params = urllib.urlencode([
+			('_FORM_SUBMIT', '1'),
+			('which_form', 'reg'),
+			('destination', ''),
+			('source', ''),
+			('error', ''),
+			# ('action', 'login'),
+			('bs_name', self.username),
+			('bs_password', self.password)
+		])
 		self.curl_object.setopt(pycurl.POSTFIELDS, params)
-		self.curl_object.perform()
-	def __send_password(self):
-		"""
-		Second step of authentication procedure.
-		"""
-		params = urllib.urlencode([('ID', self.session_id),('STATE', self.states['send_password']),('DATA',self.password)])
-		self.curl_object.setopt(pycurl.POSTFIELDS, params)
-		self.curl_object.perform()
-	def __get_authorization(self):
-		"""
-		Third and last step of authentication procedure.
-		Check if everything was done right.
-		"""
-		params = urllib.urlencode([('ID', self.session_id),('STATE', self.states['get_authorization']),('DATA',self.authentication_methods[self.method])])
-		# params = self.__encode_data(ID=self.session_id, STATE=self.states['get_authorization'], DATA=self.authentication_methods[self.method])
-		self.curl_object.setopt(pycurl.POSTFIELDS, params)
-		self.curl_object.perform()
-	def start_session(self):
-		"""
-		Start a new session and return current ID.
-		"""
 		try:
 			self.curl_object.perform()
 		except:
-			#raise Exception, "Server not found or offline."
 			raise ServerNotFoundException, ServerNotFoundException.message
+
 		data = self.__read_page()
-		p = MyParser()
-		p.feed(data)
-		p.close()
-		self.session_id = p.get_session_id()
-		
-		return self.session_id
-	def authorize(self):
+		print data
+		if data.find(self.login_success_string) == -1:
+			if 'Invalid name or password' in data:
+				raise InvalidNameOrPasswordException, InvalidNameOrPasswordException.message
+			elif 'You are already logged in' in data:
+				raise AlreadyLoggedInException, AlreadyLoggedInException.message
+			else:
+				raise LoginException, LoginException.message
+		parser = MyParser()
+		parser.feed(data)
+		# Params for logout
+		self.logout_params = parser.get_logout_params()
+		self.logout_url = parser.get_logout_url()
+		return 0
+	def logout(self):
 		"""
-		Send username and password and try to get authorization.
+		Logout from the network.
 		"""
-		self.start_session()
-		self.__send_username()
-		self.__send_password()
-		self.__get_authorization()
+		try:
+			# self.curl_object.perform()
+			# data = urllib.urlopen(self.server_url + urllib.urlencode(self.logout_params)).read()
+			data = urllib2.urlopen(self.server_url + self.logout_url).read()
+		except:
+			raise ServerNotFoundException, ServerNotFoundException.message
 		
-		data = self.__read_page()
+		# data = self.__read_page()
+		print(data)
+		if data.find(self.logout_success_string) == -1:
+			raise LogoutException, LogoutException.message
 		
-		if data.find('User authorized') == -1:
-			raise AccessDeniedException, AccessDeniedException.message
 		return 0
 	def start_autorelogin(self):
 		"""
@@ -185,7 +202,7 @@ class WiFiAuthenticator:
 		"""
 		while self.relogin is True:
 			# init new thread
-			self.autorelogin_thread = threading.Timer(self.relogin_timeout, self.authorize)
+			self.autorelogin_thread = threading.Timer(self.relogin_timeout, self.login)
 			self.autorelogin_thread.start() # start new thread
 			self.autorelogin_thread.join() # and wait until it's finished
 		self.stop_autorelogin()
@@ -216,4 +233,3 @@ class WiFiAuthenticator:
 		Enable/Disable automatic relogin.
 		"""
 		self.relogin = relogin
-

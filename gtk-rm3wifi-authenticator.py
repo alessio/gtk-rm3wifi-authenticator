@@ -3,7 +3,7 @@
 
 # This file is part of gtk-rm3wifi-authenticator
 #
-# gtk-rm3wifi-authenticator v0.4.1 - A small authenticator for wireless network of
+# gtk-rm3wifi-authenticator v0.5.0 - A small authenticator for wireless network of
 # University of RomaTre.
 # Copyright (C) 2008  Alessio Treglia <quadrispro@ubuntu-it.org>
 #
@@ -35,7 +35,7 @@ import locale, gettext
 
 from ConfigParser import ConfigParser
 
-from rm3wificommon import VERSION, LICENSE, VERBOSE_MODE, LOGO_SVG, LOGO_PNG, GLADE_XML, CONFIG_FILENAME, LANG_PATH
+from rm3wificommon import VERSION, LICENSE, VERBOSE_MODE, LOGO_SVG, LOGO_PNG, GLADE_XML, CONFIG_FILENAME, LANG_PATH, Verboser
 
 ############# TRANSLATIONS SECTION
 
@@ -43,8 +43,8 @@ LOCALE_PATH = os.path.realpath(os.path.dirname(sys.argv[0])) + '/po'
 locale.setlocale(locale.LC_ALL, '')
 
 for module in gtk.glade, gettext:
-    module.bindtextdomain('gtk-rm3wifi-authenticator', LOCALE_PATH)
-    module.textdomain('gtk-rm3wifi-authenticator')
+	module.bindtextdomain('gtk-rm3wifi-authenticator', LOCALE_PATH)
+	module.textdomain('gtk-rm3wifi-authenticator')
 
 # register the gettext function for the whole interpreter as "_"
 import __builtin__
@@ -75,7 +75,7 @@ class Configuration:
 		self.cp = ConfigParser()
 		self.params = dict() # class initialization
 		Verboser.print_verbose_msg(_('Configuration initialized'))
-		
+
 	def setdefaults(self):
 		self.params['username'] = ''
 		self.params['password'] = ''
@@ -111,13 +111,6 @@ class Configuration:
 		self.params['timeout'] = self.cp.getfloat(self.CONFIG_SECTION_NAME, 'timeout')
 		Verboser.print_verbose_msg(_('Configuration loaded'))
 
-class Verboser:
-	""" Print verbose messages """
-	@staticmethod
-	def print_verbose_msg(msg):
-		if VERBOSE_MODE == True:
-			print msg
-
 class AppStatusIcon(gtk.StatusIcon):
 	def showMessage(self, type, message_format):
 		"""
@@ -133,25 +126,27 @@ class AppStatusIcon(gtk.StatusIcon):
 	def __init__(self):
 		gtk.StatusIcon.__init__(self)
 		menu = '''
-			<ui>
-			<menubar name="Menubar">
-			<menu action="Menu">
-			<menuitem action="Login"/>
-			<separator/>
-			<menuitem action="About"/>
-			<menuitem action="Quit"/>
-			</menu>
-			</menubar>
-			</ui>
-		'''
+		     <ui>
+		     <menubar name="Menubar">
+		     <menu action="Menu">
+		     <menuitem action="Login"/>
+		     <menuitem action="Logout"/>
+		     <separator/>
+		     <menuitem action="About"/>
+		     <menuitem action="Quit"/>
+		     </menu>
+		     </menubar>
+		     </ui>
+		     '''
 
 		actions = [
 			('Menu',  None, 'Menu'),
 			('Login', gtk.STOCK_CONNECT, _('_Login...'), None, _('Login to network'), self.on_login),
+			('Logout', gtk.STOCK_DISCONNECT, _('L_ogout...'), None, _('Logout'), self.on_logout),
 			('About', gtk.STOCK_ABOUT, _('_About...'), None, _('About gtk-rm3wifi-authenticator'), self.on_about),
 			('Quit',gtk.STOCK_QUIT, _('_Quit'), None, _('Quit gtk-rm3wifi-authenticator'),
-			self.on_quit), ]
-	
+			 self.on_quit), ]
+
 		ag = gtk.ActionGroup('Actions')
 		ag.add_actions(actions)
 		self.manager = gtk.UIManager()
@@ -167,7 +162,7 @@ class AppStatusIcon(gtk.StatusIcon):
 
 		self.config = Configuration()
 		self.__load_configuration()
-		
+
 		self.ui_XML = gtk.glade.XML(GLADE_XML) # Glade file
 		# get the resource of dialog window
 		self.preferences_dialog = PreferencesDialog(self.ui_XML) # init dialog window object
@@ -179,7 +174,7 @@ class AppStatusIcon(gtk.StatusIcon):
 		self.about_dialog.set_icon_from_file(LOGO_SVG)
 		self.about_dialog.set_logo(self.about_dialog.get_icon())
 		self.about_dialog.set_translator_credits(_('translator-credits'))
-		
+
 	def __load_configuration(self):
 		"""
 		Load user configuration.
@@ -201,13 +196,13 @@ class AppStatusIcon(gtk.StatusIcon):
 		Daemon methods replies handler.
 		"""
 		self.showMessage(gtk.MESSAGE_INFO, _("Operation successfully terminated"))
-			
+
 	def handle_error(self, e):
 		"""
 		Daemon method exceptions handler.
 		"""
 		self.showMessage(gtk.MESSAGE_ERROR, e.message.splitlines()[-1])
-		
+
 	def on_activate(self, data):
 		self.preferences_dialog.activate()
 	def on_popup_menu(self, status, button, time):
@@ -223,7 +218,13 @@ class AppStatusIcon(gtk.StatusIcon):
 		# do the authentication
 		if self.config.params['relogin'] is True:
 			daemon.start_autorelogin()
-
+	def on_logout(self, widget):
+		""" Do the logout """
+		daemon_method = daemon.logout
+		daemon_method(reply_handler = self.handle_reply, error_handler = self.handle_error)
+		# log out from the network
+		if self.config.params['relogin'] is True:
+			daemon.stop_autorelogin()
 	def on_about(self, data):
 		"""
 		Create and show an about dialog.
@@ -248,7 +249,7 @@ class PreferencesDialog:
 		# destroy and delete events
 		self.dialog.connect("destroy", self.on_close)
 		self.dialog.connect("delete_event", self.on_close)
-		
+
 		# UI elements initialization
 		self.username_entry = self.ui_XML.get_widget('dialog_username_entry')
 		self.password_entry = self.ui_XML.get_widget('dialog_password_entry')
