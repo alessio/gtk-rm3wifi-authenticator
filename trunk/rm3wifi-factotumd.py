@@ -3,7 +3,7 @@
 
 # This file is part of gtk-rm3wifi-authenticator
 #
-# gtk-rm3wifi-authenticator v0.4.1 - A small authenticator for wireless network of
+# gtk-rm3wifi-authenticator v0.5.0 - A small authenticator for wireless network of
 # University of RomaTre.
 # Copyright (C) 2008  Alessio Treglia <quadrispro@ubuntu-it.org>
 #
@@ -63,7 +63,12 @@ class FactotumDaemon(dbus.service.Object):
 	@dbus.service.method('org.factotum.daemon')
 	def login(self):
 		# Do auth
-		return self.wifi_auth.authorize()
+		# return self.wifi_auth.authorize()
+		return self.wifi_auth.login()
+	@dbus.service.method('org.factotum.daemon')
+	def logout(self):
+		# Logout
+		return self.wifi_auth.logout()
 	@dbus.service.method('org.factotum.daemon')
 	def set_username(self, username):
 		self.wifi_auth.set_username(username)

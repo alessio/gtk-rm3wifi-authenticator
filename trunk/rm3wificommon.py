@@ -3,7 +3,7 @@
 
 # This file is part of gtk-rm3wifi-authenticator
 #
-# gtk-rm3wifi-authenticator v0.4.1 - A small authenticator for wireless network of
+# gtk-rm3wifi-authenticator v0.5.0 - A small authenticator for wireless network of
 # University of RomaTre.
 # Copyright (C) 2008  Alessio Treglia <quadrispro@ubuntu-it.org>
 #
@@ -23,7 +23,7 @@
 #
 
 SHORT_APPNAME = "gtk-rm3wifi-authenticator"
-VERSION = '0.4.1'
+VERSION = '0.5.0'
 LICENSE = """
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -51,3 +51,9 @@ PID_PATH = '/tmp/rm3wifi-authenticator'
 
 GLADE_XML = 'glade/gtk-rm3wifi-authenticator.glade'
 
+class Verboser:
+	""" Print verbose messages """
+	@staticmethod
+	def print_verbose_msg(msg):
+		if VERBOSE_MODE == True:
+			print msg
